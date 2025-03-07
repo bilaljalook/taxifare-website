@@ -41,7 +41,6 @@ dropoff_longitude = st.number_input("Dropoff Longitude", value=0.0)
 dropoff_latitude = st.number_input("Dropoff Latitude", value=0.0)
 passenger_count = st.number_input("Passenger Count", min_value=1, max_value=8, value=1)
 
-
 pickup_datetime = f"{date} {time}"
 
 params = {
