@@ -1,47 +1,30 @@
+import datetime
 import streamlit as st
 import requests
-import datetime
 
 
 '''
 # TaxiFareModel front
 '''
-'''
-## Here we would like to add some controllers in order to ask the user to select the parameters of the ride
 
-1. Let's ask for:
-- date and time
-- pickup longitude
-- pickup latitude
-- dropoff longitude
-- dropoff latitude
-- passenger count
-'''
 
-'''
-## Once we have these, let's call our API in order to retrieve a prediction
-
-See ? No need to load a `model.joblib` file in this app, we do not even need to know anything about Data Science in order to retrieve a prediction...
-
-🤔 How could we call our API ? Off course... The `requests` package 💡
-'''
-
-url = 'https://taxifare-662932307813.europe-west1.run.app/predict'
+url = 'https://taxifare.lewagon.ai/predict'
 
 if url == 'https://taxifare.lewagon.ai/predict':
 
     st.markdown('Maybe you want to use your own API for the prediction, not the one provided by Le Wagon...')
 
 
-date = st.date_input("Date", datetime.date.today())
-time = st.time_input("Time", datetime.datetime.now().time())
-pickup_longitude = st.number_input("Pickup Longitude", value=0.0)
-pickup_latitude = st.number_input("Pickup Latitude", value=0.0)
-dropoff_longitude = st.number_input("Dropoff Longitude", value=0.0)
-dropoff_latitude = st.number_input("Dropoff Latitude", value=0.0)
-passenger_count = st.number_input("Passenger Count", min_value=1, max_value=8, value=1)
+date = st.date_input("Date")
+time = st.time_input("Time (HH:MM:SS)")
+pickup_longitude = st.slider("Pickup Longitude", min_value=-180.0, max_value=180.0, value=0.0)
+pickup_latitude = st.slider("Pickup Latitude", min_value=-90.0, max_value=90.0, value=0.0)
+dropoff_longitude = st.slider("Dropoff Longitude", min_value=-180.0, max_value=180.0, value=0.0)
+dropoff_latitude = st.slider("Dropoff Latitude", min_value=-90.0, max_value=90.0, value=0.0)
+passenger_count = st.slider("Passenger Count", min_value=1, max_value=8, value=1)
 
 pickup_datetime = f"{date} {time}"
+st.write(pickup_datetime)
 
 params = {
     "pickup_datetime": pickup_datetime,
@@ -53,6 +36,12 @@ params = {
 }
 
 response = requests.get(url, params=params)
-prediction = response.json()
+st.write(response.url)
+st.write(response.status_code)
+st.write(f"{params}")
 
-st.write(f"Predicted fare: ${prediction['fare']:.2f}")
+if response.status_code == 200:
+    prediction = response.json()
+    st.write(f"Predicted fare: ${prediction['fare']:.2f}")
+else:
+    st.write("Error: Unable to retrieve prediction. Please try again later.")
